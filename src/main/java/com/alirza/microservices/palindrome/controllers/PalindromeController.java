@@ -5,13 +5,12 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alirza.microservices.palindrome.configuration.Configuration;
 import com.alirza.microservices.palindrome.dto.PalindromeDto;
 import com.alirza.microservices.palindrome.processor.PalindromeProcessor;
-
-import io.micrometer.common.util.StringUtils;
 
 @RestController
 public class PalindromeController {
@@ -28,6 +27,11 @@ public class PalindromeController {
 		}
 		return palindromeDtoList;
 
+	}
+
+	@GetMapping("/get-palindrome/input/{input}")
+	public PalindromeDto getPalindrome(@PathVariable String input) {
+		return PalindromeDto.builder().input(input).output(PalindromeProcessor.getOutputFromString(input)).build();
 	}
 
 }

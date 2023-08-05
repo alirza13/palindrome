@@ -1,53 +1,41 @@
 package com.alirza.microservices.palindrome.processor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import io.micrometer.common.util.StringUtils;
 
 public class PalindromeProcessor {
+	static int beginningPos, endingPos;
+	static int middlePos = -1;
 
 	public static String getOutputFromString(String input) {
 		if (StringUtils.isBlank(input)) {
 			return "none";
 		}
-		int length = input.length();
-		int beginningPos, endingPos;
-		int middlePos = -1;
-		StringBuilder sbBegin = new StringBuilder();
-		StringBuilder sbEnd = new StringBuilder();
-		if (length % 2 == 0) {
-			beginningPos = length / 2;
-			endingPos = length / 2;
-			middlePos = length / 2;
-		} else {
-			beginningPos = length / 2 - 1;
-			endingPos = length / 2;
+		int maxLength = 0;
+		int begin = 0;
+		for (int i = 0; i < input.length(); i++) {
+			int first = getMaxLength(input, i, i);
+			int second = getMaxLength(input, i, i + 1);
+			int tempMax = Math.max(first, second);
+			if (tempMax > maxLength) {
+				maxLength = tempMax;
+				begin = i - maxLength / 2;
+			}
 		}
-		List<String> resultList = new ArrayList<>();
-		String result = null;
+
+		return input.substring(begin + 1, begin + maxLength);
+	}
+
+	public static int getMaxLength(String input, int beginningPos, int endingPos) {
+		int length = input.length();
 		while (beginningPos >= 0 && endingPos < length) {
 			if (input.charAt(beginningPos) == input.charAt(endingPos)) {
-				sbBegin.insert(0, input.charAt(beginningPos));
-				if (middlePos != endingPos) {
-					sbEnd.append(input.charAt(endingPos));
-				}
+				beginningPos--;
+				endingPos++;
 			} else {
-				resultList.add(sbBegin.toString() + sbEnd.toString());
-				sbBegin.setLength(0);
-				sbEnd.setLength(0);
-			}
-			beginningPos--;
-			endingPos++;
-		}
-		int maxLength = 0;
-		for (String r : resultList) {
-			if (r.length() > maxLength) {
-				maxLength = r.length();
-				result = r;
+				break;
 			}
 		}
-		return result;
+		return endingPos - beginningPos;
 	}
 
 }
